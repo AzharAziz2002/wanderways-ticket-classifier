@@ -8,7 +8,7 @@ Machine learning project that classifies customer support tickets into predefine
 - [ ] Task 3: FastAPI deployment on PythonAnywhere
 
 ## Dataset
-Public support ticket dataset from Kaggle (place the CSV in `data/`, not committed if large). Text column: `instruction`; label column: `category`.
+Bitext Gen AI Chatbot Customer Support Dataset from Kaggle (26,872 tickets, 11 categories; 24,635 after dropping duplicates). Place the CSV at `data/tickets.csv` (not committed). Text column: `instruction`; label column: `category`.
 
 ## Approach
 1. Load data with pandas, drop missing/duplicate rows
@@ -22,9 +22,12 @@ Test accuracy: **99.57%** (majority-class baseline: 22.08%).
 
 **Leakage / memorisation check:** The TF-IDF vectorizer is inside a Pipeline, so it is fit on training text only. I also measured how similar each test ticket is to its nearest training ticket. Only 8.5% of test tickets are 0.95+ similar (median similarity 0.80). Accuracy on tickets below 0.7 similarity is about 99.0% (95.3% for the 85 least similar), so the score is not mainly driven by near-duplicates.
 
+**Confidently wrong example:** "Thanks, great service!" was predicted as CONTACT (61%) instead of FEEDBACK. None of the 24,635 cleaned tickets in the dataset contain "thanks", "great" or "thank", so only "service" reached the classifier. Of the 533 tickets containing "service", 343 are CONTACT and 188 are FEEDBACK, so the model leans CONTACT. This is a data coverage problem (no praise wording in the data), not a class-balance problem (CONTACT is 8.1%, ACCOUNT is the largest at 22.1%). Several correct predictions also had low confidence (32-47%). Ideas for Task 2: character n-grams, and testing with tickets worded differently from the training set.
+
 **Errors:** 21 of 4,927 test tickets were misclassified, mostly typos ("pyments", "onlinepayment") and very short tickets. Character n-grams should help in Task 2.
 
 **Caveat:** The dataset is synthetic and templated, so real-world accuracy is likely lower. A grouped split and cross-validation will follow in Task 2.
+
 ## Run it
 ```bash
 pip install -r requirements.txt
