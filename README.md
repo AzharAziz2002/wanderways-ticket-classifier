@@ -18,10 +18,13 @@ Public support ticket dataset from Kaggle (place the CSV in `data/`, not committ
 5. Evaluate accuracy and save with pickle
 
 ## Results
-Test accuracy: **99.57%**
+Test accuracy: **99.57%** (majority-class baseline: 22.08%).
 
-The dataset is synthetic and templated, so real-world accuracy is likely lower. This will be tested in Task 2 with cross-validation.
+**Leakage / memorisation check:** The TF-IDF vectorizer is inside a Pipeline, so it is fit on training text only. I also measured how similar each test ticket is to its nearest training ticket. Only 8.5% of test tickets are 0.95+ similar (median similarity 0.80). Accuracy on tickets below 0.7 similarity is about 99.0% (95.3% for the 85 least similar), so the score is not mainly driven by near-duplicates.
 
+**Errors:** 21 of 4,927 test tickets were misclassified, mostly typos ("pyments", "onlinepayment") and very short tickets. Character n-grams should help in Task 2.
+
+**Caveat:** The dataset is synthetic and templated, so real-world accuracy is likely lower. A grouped split and cross-validation will follow in Task 2.
 ## Run it
 ```bash
 pip install -r requirements.txt
